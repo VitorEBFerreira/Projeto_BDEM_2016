@@ -119,9 +119,25 @@ table(dados_sim_2$TPMORTEOCO, useNA = "always")
 # NA = 15.874
 
 table(dados_sim_2$CAUSABAS, useNA = "always")
+head(sort(table(dados_sim_2$CAUSABAS), decreasing = TRUE), 5)
+# Resultado:
+# I219 (Infarto) = 1.099
+# R99 (Causas mal definidas) = 697
+# J189 (Pneumonia) = 613
+# I64 (AVC) = 440
+# E149 (Diabetes) = 412
 
+# Avaliação da unidade de medida de IDADE
 idade_str = sprintf("%03d", as.numeric(dados_sim_2$IDADE))
 table(substr(idade_str, 1, 1), useNA = "always")
+# Resultado:
+# 0 (Minutos) = 66
+# 1 (Horas) = 119
+# 2 (Dias) = 315
+# 3 (Meses) = 239
+# 4 (Anos) = 16.649
+# 5 (>100 anos) = 107
+# 9 (Ignorado) = 40
 
 # Ao terminar a Tarefa 4 commit com a mensagem "script BDEM - SIM - tarefas 1 a 4" e envie para o repositório Projeto_BDEM_2016
 
