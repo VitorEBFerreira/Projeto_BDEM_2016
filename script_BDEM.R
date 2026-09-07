@@ -147,6 +147,27 @@ table(substr(idade_str, 1, 1), useNA = "always")
 # Verifique o dicionário do SIM para identificar qual o código das categorias de cada variável
 # Em variáveis quantitativas como IDADE verificar se existem valores como 9999 para NA
 
+# Atribuição de NA às categorias de "Ignorado / Não informado"
+dados_sim_2$TIPOBITO[dados_sim_2$TIPOBITO == 9] = NA
+
+dados_sim_2$SEXO[dados_sim_2$SEXO == 0 | dados_sim_2$SEXO == 9] = NA
+
+dados_sim_2$RACACOR[dados_sim_2$RACACOR == 9] = NA
+
+dados_sim_2$ESC2010[dados_sim_2$ESC2010 == 9] = NA
+
+dados_sim_2$TPMORTEOCO[dados_sim_2$TPMORTEOCO == 9] = NA
+
+dados_sim_2$IDADE[dados_sim_2$IDADE == 999] = NA
+
+dados_sim_2$CAUSABAS[dados_sim_2$CAUSABAS == "" | dados_sim_2$CAUSABAS == "9999"] = NA
+
+# Verificação do total de NAs em cada variável
+colSums(is.na(dados_sim_2))
+# Resultado:
+# CONTADOR: 0 | TIPOBITO: 0 | IDADE: 40 | SEXO: 10 | RACACOR: 235 
+# ESC2010: 2393 | CODMUNRES: 0 | TPMORTEOCO: 16383 | CAUSABAS: 0
+View(dados_sim_2)
 
 # Ao terminar a Tarefa 5 commit com a mensagem "script BDEM - SIM - tarefas 1 a 5" e envie para o repositório Projeto_BDEM_2016
 
