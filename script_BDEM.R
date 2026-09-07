@@ -178,6 +178,36 @@ View(dados_sim_2)
 # ATENçÃO: 1. Na hora de escrever os labels, somente a PRIMEIRA LETRA da legenda é maiúscula. Exemplo para SEXO: Feminino e Masculino
 #          2. Nesta Tarefa 6 não crie novas variáveis dentro do banco de dados
 
+# Transformando em fatores e atribuindo as legendas (labels):
+
+dados_sim_2$TIPOBITO = factor(dados_sim_2$TIPOBITO, 
+                              levels = c(1, 2), 
+                              labels = c("Fetal", "Não fetal"))
+
+dados_sim_2$SEXO = factor(dados_sim_2$SEXO, 
+                          levels = c(1, 2), 
+                          labels = c("Masculino", "Feminino"))
+
+dados_sim_2$RACACOR = factor(dados_sim_2$RACACOR, 
+                             levels = c(1, 2, 3, 4, 5), 
+                             labels = c("Branca", "Preta", "Amarela", "Parda", "Indígena"))
+
+dados_sim_2$ESC2010 = factor(dados_sim_2$ESC2010, 
+                             levels = c(0, 1, 2, 3, 4, 5), 
+                             labels = c("Sem escolaridade", "Fundamental I", "Fundamental II", "Médio", "Superior incompleto", "Superior completo"))
+
+dados_sim_2$TPMORTEOCO = factor(dados_sim_2$TPMORTEOCO, 
+                                levels = c(1, 2, 3, 4, 5, 8), 
+                                labels = c("Na gravidez", "No parto", "No abortamento", "Até 42 dias após o término do parto", "De 43 dias a 1 ano após o término da gestação", "Não ocorreu nestes períodos"))
+
+# Verificação da estrutura e frequências após aplicação das legendas
+summary(dados_sim_2[, c("TIPOBITO", "SEXO", "RACACOR", "ESC2010", "TPMORTEOCO")])
+# Resultado:
+# TIPOBITO: Fetal: 0 | Não fetal: 17535 | NA's: 0
+# SEXO: Masculino: 11109 | Feminino: 6416 | NA's: 10
+# RACACOR: Branca: 6173 | Preta: 1300 | Amarela: 61 | Parda: 9525 | Indígena: 241 | NA's: 235
+# ESC2010: Sem escolaridade: 3628 | Fundamental I: 5794 | Fundamental II: 2884 | Médio: 2058 | Superior incompleto: 185 | Superior completo: 593 | NA's: 2393
+# TPMORTEOCO: Na gravidez: 22 | No parto: 3 | No abortamento: 2 | Até 42 dias após o término do parto: 29 | De 43 dias a 1 ano após o término da gestação: 16 | Não ocorreu nestes períodos: 1078 | NA's: 16383
 
 # Ao terminar a Tarefa 6 commit com a mensagem "script BDEM - SIM - tarefas 1 a 6" e envie para o repositório Projeto_BDEM_2016
 
