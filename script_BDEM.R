@@ -46,11 +46,13 @@ View(dados_sim_1)
 
 # Ao terminar a Tarefa 2 commit com a mensagem "script BDEM - SIM - tarefas 1 a 2" e envie para o repositório Projeto_BDEM_2016
 
-
 # Tarefa 3. Reduzir dados_sim_1 apenas para o estado que o aluno irá trabalhar (utilizar os dois primeiros dígitos de CODMUNRES), nomeando este novo banco de dados como dados_sim_2####
 # Códigos das UF: 11: RO, 12: AC, 13: AM, 14: RR, 15: PA, 16: AP, 17: TO, 21: MA, 22: PI, 23: CE, 24: RN
 # 25: PB, 26: PE, 27: AL, 28: SE, 29: BA, 31: MG, 32: ES, 33: RJ, 35: SP, 41: PR, 42: SC, 43: RS
 # 50: MS, 51: MT, 52: GO, 53: DF
+
+# dados_sim_2 para MT (51)
+dados_sim_2 = dados_sim_2 = subset(dados_sim_1, substr(CODMUNRES, 1, 2) == "51")
 
 # observar abaixo o número de óbitos por UF de residência para certificar-se que seu banco de dados está correto
 # 11:8344      12:3763     13:16799    14:2157      15:38557     16:2995     17:7490
@@ -59,6 +61,8 @@ View(dados_sim_1)
 # 41:74740     42:40270    43:87583
 # 50:16749     51:17535    52:38074    53:12050 
 
+# Verificar se bateu com 17535
+nrow(dados_sim_2)
 
 # Ao terminar a Tarefa 3 commit com a mensagem "script BDEM - SIM - tarefas 1 a 3" e envie para o repositório Projeto_BDEM_2016
 
