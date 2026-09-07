@@ -74,6 +74,54 @@ nrow(dados_sim_2)
 # Atenção: a unidade de medida de IDADE no DICIONÀRIO do SIM está errada
 # O propósito das avaliações acima é verificar se as categorias estão de acordo com o dicionário do SIM ou se aparecem categorias estranhas
 
+# Frequências das variáveis qualitativas
+table(dados_sim_2$TIPOBITO, useNA = "always")
+# Resultado:
+# 2 (Não fetal) = 17.535 
+# NA = 0 (100% dos óbitos do banco são não fetais)
+
+table(dados_sim_2$SEXO, useNA = "always")
+# Resultado:
+# 1 (Masculino) = 11.109 
+# 2 (Feminino) = 6.416
+# 0 (Ignorado) = 10
+# NA = 0
+
+table(dados_sim_2$RACACOR, useNA = "always")
+# Resultado:
+# 1 (Branca) = 6.173
+# 2 (Preta) = 1.300
+# 3 (Amarela) = 61
+# 4 (Parda) = 9.525
+# 5 (Indígena) = 241
+# NA = 235
+
+table(dados_sim_2$ESC2010, useNA = "always")
+# Resultado:
+# 0 (Sem esc.) = 3.628
+# 1 (Fund I) = 5.794
+# 2 (Fund II) = 2.884
+# 3 (Médio) = 2.058
+# 4 (Sup inc) = 185
+# 5 (Sup comp) = 593
+# 9 (Ignorado) = 1.036
+# NA = 1.357
+
+table(dados_sim_2$TPMORTEOCO, useNA = "always")
+# Resultado:
+# 1 (Gravidez) = 22
+# 2 (Parto) = 3
+# 3 (Aborto) = 2
+# 4 (Até 42d) = 29
+# 5 (43d-1a) = 16
+# 8 (Não ocorreu) = 1.078
+# 9 (Ignorado) = 509
+# NA = 15.874
+
+table(dados_sim_2$CAUSABAS, useNA = "always")
+
+idade_str = sprintf("%03d", as.numeric(dados_sim_2$IDADE))
+table(substr(idade_str, 1, 1), useNA = "always")
 
 # Ao terminar a Tarefa 4 commit com a mensagem "script BDEM - SIM - tarefas 1 a 4" e envie para o repositório Projeto_BDEM_2016
 
