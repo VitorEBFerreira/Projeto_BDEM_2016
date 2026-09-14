@@ -215,15 +215,130 @@ summary(dados_sim_2[, c("TIPOBITO", "SEXO", "RACACOR", "ESC2010", "TPMORTEOCO")]
 # Tarefa 7. Criar um banco de dados, de nome SIM_UF.csv (Exemplo: SIM_RJ.csv), contendo as variáveis listadas no arquivo “Variáveis - Projeto - Tarefa 7 - SIM.pdf”####
 # Atenção: a ordem das variáveis do arquivo deve ser respeitada
 
+# 1. Seleção da base bruta de 87 colunas filtrada para Mato Grosso (51) para o cálculo de TORC
+dados_sim$UF = substr(as.character(dados_sim$CODMUNRES), 1, 2)
+
+df_sim_completo_uf = dados_sim[dados_sim$UF == "51", ]
+
+df_sim_completo_uf$UF = NULL
+
+# 2- Pré-cálculo dos vetores lógicos na base inteira (vetorização)
+
+# Idade
+codigo_idade = formatC(dados_sim_2$IDADE, width = 3, flag = "0")
+unid_medida  = substr(codigo_idade, 1, 1)
+val_idade    = as.numeric(substr(codigo_idade, 2, 3))
+
+tempo_dias = ifelse(unid_medida %in% c("0", "1"), 0,
+                    ifelse(unid_medida == "2", val_idade,
+                           ifelse(unid_medida == "3", 30 * val_idade, NA)))
+
+tempo_anos        = ifelse(unid_medida == "4", val_idade, ifelse(unid_medida == "5", 100 + val_idade, NA))
+flag_idade_fertil = !is.na(tempo_anos) & tempo_anos >= 15 & tempo_anos <= 49
+
+# Tratamento de Causas do CID-10
+letra_cid = substr(dados_sim_2$CAUSABAS, 1, 1)
+num_cid   = suppressWarnings(as.numeric(substr(dados_sim_2$CAUSABAS, 2, 3)))
+chave_cid = ifelse(is.na(dados_sim_2$CAUSABAS), NA, paste0(letra_cid, formatC(num_cid, width = 2, flag = "0")))
+
+e_causa_externa   = !is.na(chave_cid) & chave_cid >= "V01" & chave_cid <= "Y98"
+e_causa_natural   = !is.na(chave_cid) & !e_causa_externa
+e_cb_infecciosa   = e_causa_natural & chave_cid >= "A00" & chave_cid <= "B99"
+e_cb_neoplasia    = e_causa_natural & ((chave_cid >= "C00" & chave_cid <= "D48") | (chave_cid >= "D50" & chave_cid <= "D89"))
+e_cb_circulatorio = e_causa_natural & chave_cid >= "I00" & chave_cid <= "I99"
+e_cb_respiratorio = e_causa_natural & chave_cid >= "J00" & chave_cid <= "J99"
+e_cb_outras_nat   = e_causa_natural & !e_cb_infecciosa & !e_cb_neoplasia & !e_cb_circulatorio & !e_cb_respiratorio
+
+# Classificação Neonatal e Pós-neonatal (óbitos não fetais)
+e_neonatal         = !is.na(tempo_dias) & tempo_dias <= 27 & dados_sim_2$TIPOBITO == "Não fetal"
+e_neonatal_precoce = e_neonatal & tempo_dias <= 6
+e_neonatal_tardia  = e_neonatal & tempo_dias >= 7
+e_pos_neonatal     = !is.na(tempo_dias) & tempo_dias >= 28 & tempo_dias <= 364 & dados_sim_2$TIPOBITO == "Não fetal"
+
+# Classificação de Morte Materna
+e_materno_gestacao = !is.na(dados_sim_2$TPMORTEOCO) & dados_sim_2$TPMORTEOCO == "Na gravidez"
+e_materno_parto    = !is.na(dados_sim_2$TPMORTEOCO) & dados_sim_2$TPMORTEOCO == "No parto"
+e_materno_aborto   = !is.na(dados_sim_2$TPMORTEOCO) & dados_sim_2$TPMORTEOCO == "No abortamento"
+e_materno_42d      = !is.na(dados_sim_2$TPMORTEOCO) & dados_sim_2$TPMORTEOCO == "Até 42 dias após o término do parto"
+e_materno_tardio   = !is.na(dados_sim_2$TPMORTEOCO) & dados_sim_2$TPMORTEOCO == "De 43 dias a 1 ano após o término da gestação"
+e_materno_precoce  = e_materno_gestacao | e_materno_parto | e_materno_aborto | e_materno_42d
+e_materno_total    = e_materno_precoce | e_materno_tardio | (!is.na(letra_cid) & letra_cid == "O")
+
+
+# 3. Função de contagem por grupo de índices
+calcula_soma = function(x) sum(x, na.rm = TRUE)
+
+extrair_indicadores_sim = function(indices) {
+  df87 = df_sim_completo_uf[indices, ]
+  df9  = dados_sim_2[indices, ]
+  
+  data.frame(
+    TO = length(indices), 
+    TORC = calcula_soma(complete.cases(df87)),
+    TORCR = calcula_soma(complete.cases(df9)),
+    TO_NN = calcula_soma(e_causa_externa[indices]), 
+    TO_N = calcula_soma(e_causa_natural[indices]),
+    TO_CB_I = calcula_soma(e_cb_infecciosa[indices]), 
+    TO_CB_N = calcula_soma(e_cb_neoplasia[indices]), 
+    TO_CB_C = calcula_soma(e_cb_circulatorio[indices]),
+    TO_CB_R = calcula_soma(e_cb_respiratorio[indices]), 
+    TO_CB_O = calcula_soma(e_cb_outras_nat[indices]),
+    TO_M = calcula_soma(dados_sim_2$SEXO[indices] == "Masculino"), 
+    TO_F = calcula_soma(dados_sim_2$SEXO[indices] == "Feminino"),
+    TO_F_IF = calcula_soma(dados_sim_2$SEXO[indices] == "Feminino" & flag_idade_fertil[indices]),
+    TO_FT = calcula_soma(dados_sim_2$TIPOBITO[indices] == "Fetal"),
+    TO_NT = calcula_soma(e_neonatal[indices]), 
+    TO_NT_P = calcula_soma(e_neonatal_precoce[indices]), 
+    TO_NT_T = calcula_soma(e_neonatal_tardia[indices]), 
+    TO_PNT = calcula_soma(e_pos_neonatal[indices]),
+    TONT_B  = calcula_soma(e_neonatal[indices] & dados_sim_2$RACACOR[indices] == "Branca"),
+    TONT_PT = calcula_soma(e_neonatal[indices] & dados_sim_2$RACACOR[indices] == "Preta"),
+    TONT_A  = calcula_soma(e_neonatal[indices] & dados_sim_2$RACACOR[indices] == "Amarela"),
+    TONT_PD = calcula_soma(e_neonatal[indices] & dados_sim_2$RACACOR[indices] == "Parda"),
+    TONT_I  = calcula_soma(e_neonatal[indices] & dados_sim_2$RACACOR[indices] == "Indígena"),
+    TO_MT = calcula_soma(e_materno_total[indices]), 
+    TO_MT_DG = calcula_soma(e_materno_gestacao[indices]), 
+    TO_MT_PT = calcula_soma(e_materno_parto[indices]),
+    TO_MT_AB = calcula_soma(e_materno_aborto[indices]), 
+    TO_MT_42 = calcula_soma(e_materno_42d[indices]), 
+    TO_MT_43 = calcula_soma(e_materno_tardio[indices]),
+    TO_MT_P = calcula_soma(e_materno_precoce[indices]), 
+    TO_MT_P_I = calcula_soma(e_materno_precoce[indices] & dados_sim_2$SEXO[indices] == "Feminino" & flag_idade_fertil[indices]),
+    TO_MT_P_ES   = calcula_soma(e_materno_precoce[indices] & dados_sim_2$ESC2010[indices] == "Sem escolaridade"),
+    TO_MT_P_EFI  = calcula_soma(e_materno_precoce[indices] & dados_sim_2$ESC2010[indices] == "Fundamental I"),
+    TO_MT_P_EFII = calcula_soma(e_materno_precoce[indices] & dados_sim_2$ESC2010[indices] == "Fundamental II"),
+    TO_MT_P_EM   = calcula_soma(e_materno_precoce[indices] & dados_sim_2$ESC2010[indices] == "Médio"),
+    TO_MT_P_ESI  = calcula_soma(e_materno_precoce[indices] & dados_sim_2$ESC2010[indices] == "Superior incompleto"),
+    TO_MT_P_ESC  = calcula_soma(e_materno_precoce[indices] & dados_sim_2$ESC2010[indices] == "Superior completo")
+  )
+}
+
+# 4. Agregação por nível (UF = 51 e Municípios)
+resumo_uf = cbind(data.frame(ANO = 2016, NIVEL = "UF", CODMUNRES = "51"),
+                  extrair_indicadores_sim(seq_len(nrow(dados_sim_2))))
+
+lista_municipios = sort(unique(dados_sim_2$CODMUNRES))
+resumo_municipios = do.call(rbind, lapply(lista_municipios, function(codigo) {
+  indices = which(dados_sim_2$CODMUNRES == codigo)
+  cbind(data.frame(ANO = 2016, NIVEL = "MUNICIPIO", CODMUNRES = as.character(codigo)), 
+        extrair_indicadores_sim(indices))
+}))
+
+# 5. Consolidação da tabela final
+SIM_MT = rbind(resumo_uf, resumo_municipios)
+rownames(SIM_MT) = NULL
+
+# Checagem das dimensões
+dim(SIM_MT)
 
 # Ao terminar a Tarefa 7 commit com a mensagem "script BDEM - SIM - tarefas 1 a 7" e envie para o repositório Projeto_BDEM_2016
 
 
-# Tarefa 8. Exportar o banco de dados com o nome SIM_UF.csv (Exemplo: SIM_RJ.csv)
+# Tarefa 8. Exportar o banco de dados com o nome SIM_UF.csv (Exemplo: SIM_RJ.csv)####
+
+
 
 # Ao terminar a Tarefa 8 fazer um commit com o comentário "dados SIM_UF 2016 e script - SIM - tarefas 1 a 8"  e envie para o repositório Projeto_BDEM_2016
-
-
 
 ####################################
 # ETAPA 2: BANCO DE DADOS DO SINASC
