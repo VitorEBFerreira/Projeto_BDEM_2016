@@ -399,7 +399,16 @@ dim(dados_sinasc_2)
 # Tarefa 4. Verificar em dados_sinasc_2 a frequência das categorias das seguintes variáveis: LOCNASC, ESTCIVMAE, GESTACAO, GRAVIDEZ, PARTO,#####
 # SEXO, RACACOR, IDANOMAL, ESCMAE2010, RACACORMAE, TPAPRESENT, TPROBSON, PARIDADE, KOTELCHUCK
 # Avalie também os valores das variáveis quantitativas de IDADEMAE, SEMAGESTAC, APGAR5 e PESO
+vars_qualitativas = c("LOCNASC", "ESTCIVMAE", "GESTACAO", "GRAVIDEZ", "PARTO",
+                      "SEXO", "RACACOR", "IDANOMAL", "ESCMAE2010", "RACACORMAE",
+                      "TPAPRESENT", "TPROBSON", "PARIDADE", "KOTELCHUCK")
 
+lapply(dados_sinasc_2[, vars_qualitativas], table, useNA = "always")
+
+# Resumo estatístico das variáveis quantitativas
+vars_quantitativas = c("IDADEMAE", "SEMAGESTAC", "APGAR5", "PESO")
+
+summary(dados_sinasc_2[, vars_quantitativas])
 
 # Ao terminar a Tarefa 4 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 4" e envie para o repositório Projeto_BDEM_2016
 
