@@ -512,7 +512,44 @@ str(dados_sinasc_2)
 # nova variável: dados_sinasc_2$PEREG: Não: CODMUNNASC igual a CODMUNRES, Sim: CODMUNNASC diferente de CODMUNRES
 # nova variável: dados_sinasc_2$ESTCIV: Sem companheiro: ESTCIVMAE 1, 3 ou 4, Com companheiro: ESTCIVMAE 2 ou 5
 # Ao categorizar as variáveis, garantir que sejam transformadas em tipo fator
+# Categorização do Peso ao Nascer
+dados_sinasc_2$F_PESO = ifelse(is.na(dados_sinasc_2$PESO), NA,
+                               ifelse(dados_sinasc_2$PESO < 2500, "Baixo peso",
+                                      ifelse(dados_sinasc_2$PESO < 4000, "Peso normal", "Macrossomia")))
+dados_sinasc_2$F_PESO = factor(dados_sinasc_2$F_PESO, 
+                               levels = c("Baixo peso", "Peso normal", "Macrossomia"))
 
+# Categorização da Idade da Mãe
+dados_sinasc_2$F_IDADE = cut(dados_sinasc_2$IDADEMAE,
+                             breaks = c(0, 15, 20, 25, 30, 35, 40, 45, 50, Inf),
+                             right = FALSE,
+                             labels = c("<15", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50+"))
+
+# Categorização do Apgar no 5º minuto
+dados_sinasc_2$F_APGAR5 = ifelse(is.na(dados_sinasc_2$APGAR5), NA,
+                                 ifelse(dados_sinasc_2$APGAR5 < 7, "Baixo", "Normal"))
+dados_sinasc_2$F_APGAR5 = factor(dados_sinasc_2$F_APGAR5, 
+                                 levels = c("Baixo", "Normal"))
+
+# Peregrinação
+dados_sinasc_2$PEREG = ifelse(is.na(dados_sinasc_2$CODMUNNASC) | is.na(dados_sinasc_2$CODMUNRES), NA,
+                              ifelse(dados_sinasc_2$CODMUNNASC == dados_sinasc_2$CODMUNRES, "Não", "Sim"))
+dados_sinasc_2$PEREG = factor(dados_sinasc_2$PEREG, 
+                              levels = c("Não", "Sim"))
+
+# Estado Civil Recodificado
+dados_sinasc_2$ESTCIV = ifelse(is.na(dados_sinasc_2$ESTCIVMAE), NA,
+                               ifelse(dados_sinasc_2$ESTCIVMAE %in% c("Solteira", "Viúva", "Separada judicialmente/divorciada"),
+                                      "Sem companheiro", "Com companheiro"))
+dados_sinasc_2$ESTCIV = factor(dados_sinasc_2$ESTCIV, 
+                               levels = c("Sem companheiro", "Com companheiro"))
+
+# Verificação das novas variáveis criadas
+str(dados_sinasc_2[, c("F_PESO", "F_IDADE", "F_APGAR5", "PEREG", "ESTCIV")])
+summary(dados_sinasc_2[, c("F_PESO", "F_IDADE", "F_APGAR5", "PEREG", "ESTCIV")])
+lapply(dados_sinasc_2[, c("F_PESO", "F_IDADE", "F_APGAR5", "PEREG", "ESTCIV")], table, useNA = "always")
+tapply(dados_sinasc_2$IDADEMAE, dados_sinasc_2$F_IDADE, range, na.rm = TRUE)
+tapply(dados_sinasc_2$APGAR5, dados_sinasc_2$F_APGAR5, range, na.rm = TRUE)
 
 # Ao terminar a Tarefa 7 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 7" e envie para o repositório Projeto_BDEM_2016
 
