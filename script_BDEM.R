@@ -388,7 +388,10 @@ str(dados_sinasc_1)
 # 31: 253520    32: 53413     33: 219129    35: 601437     
 # 41: 155066    42: 95313     43: 141411
 # 50: 42432     51: 53531     52: 95563     53: 43340 
+dados_sinasc_2 = subset(dados_sinasc_1, substr(as.character(CODMUNRES), 1, 2) == "51")
 
+# Verificação (deve retornar 53531 21)
+dim(dados_sinasc_2)
 
 # Ao terminar a Tarefa 3 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 3" e envie para o repositório Projeto_BDEM_2016
 
