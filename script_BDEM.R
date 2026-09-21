@@ -346,15 +346,27 @@ write.csv(SIM_MT, file = "SIM_MT.csv", row.names = FALSE)
 # Você deve criar e estar na branch SINASC antes de inserir os comandos 
 # NÃO altere as linhas de qualquer outra ETAPA do script e nem do cabeçalho
 
-# Tarefa 1. Leitura do banco de dados SINASC_2016 com 2857800 linhas e 61 colunas com o nome de dados_sinasc
+# Tarefa 1. Leitura do banco de dados SINASC_2016 com 2857800 linhas e 61 colunas com o nome de dados_sinasc####
 # Verificar se a leitura foi feita corretamente e a estrutura dos dados
 # Por uma questão de padronização coloque todos os nomes das variáveis em letra maiúscula,
 # usando o comando names(dados_sinasc) = toupper(names(dados_sinasc))
-
+# Leitura do banco
+dados_sinasc = read.csv("SINASC_2016.csv",
+                     header = T,
+                     sep = ";",
+                     stringsAsFactors = F)
+# Padronização
+names(dados_sinasc) = toupper(names(dados_sinasc))
+# Verificando
+dim(dados_sinasc)
+names(dados_sinasc)
+# Estrutura
+str(dados_sinasc)
+summary(dados_sinasc)
 
 # Ao terminar a Tarefa 1 commit com a mensagem "script BDEM - SINASC - tarefa 1" e envie para o repositório Projeto_BDEM_2016
 
-# Tarefa 2. Reduzir dados_sinasc apenas para as colunas que serão utilizadas, nomeando este novo banco de dados como dados_sinasc_1
+# Tarefa 2. Reduzir dados_sinasc apenas para as colunas que serão utilizadas, nomeando este novo banco de dados como dados_sinasc_1####
 # As colunas serão 3, 4, 5, 6, 11, 12, 13, 14, 18, 20, 21, 22, 23, 34, 37, 43, 47, 58, 59, 60, 61
 # Nomes das respectivas variáveis: CODMUNNASC, LOCNASC, IDADEMAE, ESTCIVMAE, CODMUNRES, GESTACAO, GRAVIDEZ, PARTO, 
 # SEXO, APGAR5, RACACOR, PESO, IDANOMAL, ESCMAE2010, RACACORMAE, SEMAGESTAC, TPAPRESENT, TPROBSON, PARIDADE, KOTELCHUCK, CONTADOR
@@ -363,7 +375,7 @@ write.csv(SIM_MT, file = "SIM_MT.csv", row.names = FALSE)
 # Ao terminar a Tarefa 2 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 2" e envie para o repositório Projeto_BDEM_2016
 
 
-# Tarefa 3. Reduzir dados_sinasc_1 apenas para o estado que o aluno irá trabalhar (utilizar os dois primeiros dígitos de CODMUNRES), nomeando este novo banco de dados como dados_sinasc_2
+# Tarefa 3. Reduzir dados_sinasc_1 apenas para o estado que o aluno irá trabalhar (utilizar os dois primeiros dígitos de CODMUNRES), nomeando este novo banco de dados como dados_sinasc_2####
 # Códigos das UF: 11: RO, 12: AC, 13: AM, 14: RR, 15: PA, 16: AP, 17: TO, 21: MA, 22: PI, 23: CE, 24: RN
 # 25: PB, 26: PE, 27: AL, 28: SE, 29: BA, 31: MG, 32: ES, 33: RJ, 35: SP, 41: PR, 42: SC, 43: RS
 # 50: MS, 51: MT, 52: GO, 53: DF 
@@ -379,7 +391,7 @@ write.csv(SIM_MT, file = "SIM_MT.csv", row.names = FALSE)
 # Ao terminar a Tarefa 3 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 3" e envie para o repositório Projeto_BDEM_2016
 
 
-# Tarefa 4. Verificar em dados_sinasc_2 a frequência das categorias das seguintes variáveis: LOCNASC, ESTCIVMAE, GESTACAO, GRAVIDEZ, PARTO,
+# Tarefa 4. Verificar em dados_sinasc_2 a frequência das categorias das seguintes variáveis: LOCNASC, ESTCIVMAE, GESTACAO, GRAVIDEZ, PARTO,#####
 # SEXO, RACACOR, IDANOMAL, ESCMAE2010, RACACORMAE, TPAPRESENT, TPROBSON, PARIDADE, KOTELCHUCK
 # Avalie também os valores das variáveis quantitativas de IDADEMAE, SEMAGESTAC, APGAR5 e PESO
 
@@ -387,7 +399,7 @@ write.csv(SIM_MT, file = "SIM_MT.csv", row.names = FALSE)
 # Ao terminar a Tarefa 4 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 4" e envie para o repositório Projeto_BDEM_2016
 
 
-# Tarefa 5. Atribuir para cada variável de dados_sinasc_2 como sendo NA a categoria de "Não informado ou Ignorado", 
+# Tarefa 5. Atribuir para cada variável de dados_sinasc_2 como sendo NA a categoria de "Não informado ou Ignorado", #####
 # geralmente com código 9
 # Verifique o dicionário do SINASC para identificar qual o código das categorias de cada variável
 # KOTELCHUCK = 9 significa "Não informado"   TPROBSON = 11 significa "Não classificado por falta de informação"
@@ -397,7 +409,7 @@ write.csv(SIM_MT, file = "SIM_MT.csv", row.names = FALSE)
 # Ao terminar a Tarefa 5 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 5" e envie para o repositório Projeto_BDEM_2016
 
 
-# Tarefa 6. Atribuir legendas para as categorias das variáveis qualitativas investigadas na tarefa 4.
+# Tarefa 6. Atribuir legendas para as categorias das variáveis qualitativas investigadas na tarefa 4.####
 # Exemplo: dados_sinasc_2$KOTELCHUCK = factor(dados_sinasc_2$KOTELCHUCK, levels = c(1,2,3,4,5), 
 # labels = c("Não realizou pré-natal", "Inadequado", "Intermediário", "Adequado",  
 # "Mais que adequado")
@@ -409,7 +421,7 @@ write.csv(SIM_MT, file = "SIM_MT.csv", row.names = FALSE)
 # Ao terminar a Tarefa 6 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 6" e envie para o repositório Projeto_BDEM_2016
 
 
-# Tarefa 7. Categorizar as variáveis IDADEMAE, PESO e APGAR5 e criar variáveis referentes ao deslocamento materno (peregrinação) e estado civil
+# Tarefa 7. Categorizar as variáveis IDADEMAE, PESO e APGAR5 e criar variáveis referentes ao deslocamento materno (peregrinação) e estado civil####
 # nova variável: dados_sinasc_2$F_PESO com PESO: < 2500: Baixo peso, >=2500 e < 4000: Peso normal, >= 4000: Macrossomia
 # nova variável dados_sinasc_2$F_IDADE com IDADEMAE: <15, 15-19, 20-24, 25-29, 30-34, 35-39, 40-44, 45-49, 50+
 # nova variável dados_sinasc_2$F_APGAR5 com APGAR5: < 7: Baixo, >= 7: Normal
@@ -422,7 +434,7 @@ write.csv(SIM_MT, file = "SIM_MT.csv", row.names = FALSE)
 # Ao terminar a Tarefa 7 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 7" e envie para o repositório Projeto_BDEM_2016
 
 
-# Tarefa 8. Agregar ao banco de dados_sinasc_2 as informações PESO_P10 e PESO_P90 a partir de Tabela_PIG_Brasil.csv
+# Tarefa 8. Agregar ao banco de dados_sinasc_2 as informações PESO_P10 e PESO_P90 a partir de Tabela_PIG_Brasil.csv####
 # a Tabela PIG informa P10 e P90 dos pesos, de acordo com a idade gestacional
 # Criar nova variável referente ao peso, de acordo com a idade gestacional, conforme indicado abaixo
 # nova variável apenas para casos de GRAVIDEZ Única: dados_sinasc_2$F_PIG: PIG: PESO < PESO_P10, AIG: PESO_P10 <= PESO <= PESO_P90, GIG: PESO > PESO_P90
