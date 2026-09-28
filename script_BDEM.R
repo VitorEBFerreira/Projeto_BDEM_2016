@@ -559,7 +559,43 @@ tapply(dados_sinasc_2$APGAR5, dados_sinasc_2$F_APGAR5, range, na.rm = TRUE)
 # Criar nova variável referente ao peso, de acordo com a idade gestacional, conforme indicado abaixo
 # nova variável apenas para casos de GRAVIDEZ Única: dados_sinasc_2$F_PIG: PIG: PESO < PESO_P10, AIG: PESO_P10 <= PESO <= PESO_P90, GIG: PESO > PESO_P90
 # Atenção para casos de NA em SEMAGESTAC, PESO ou SEXO. Lembre-se também que em dados_sinasc_2 SEXO está como fator com as categorias Feminino e Masculino.
+# Leitura da Tabela PIG
+pig = read.csv("Tabela_PIG_Brasil.csv",
+               header = TRUE,
+               sep = ";",
+               stringsAsFactors = FALSE)
 
+names(pig) = toupper(names(pig))
+
+# Ajusta a variável SEXO da tabela PIG para fator
+if (is.numeric(pig$SEXO)) {
+  pig$SEXO = factor(pig$SEXO, levels = c(1, 2), labels = c("Masculino", "Feminino"))
+} else {
+  pig$SEXO = factor(pig$SEXO, levels = c("Masculino", "Feminino"))
+}
+
+# Junção (merge) por SEMAGESTAC e SEXO
+dados_sinasc_2 = merge(dados_sinasc_2, 
+                       pig[, c("SEMAGESTAC", "SEXO", "PESO_P10", "PESO_P90")],
+                       by = c("SEMAGESTAC", "SEXO"),
+                       all.x = TRUE)
+
+# Criação da variável F_PIG (inicializa com NA)
+dados_sinasc_2$F_PIG = NA
+
+# Condição para gravidez Única e com dados de percentis disponíveis
+e_unica = !is.na(dados_sinasc_2$GRAVIDEZ) & dados_sinasc_2$GRAVIDEZ == "Única"
+
+dados_sinasc_2$F_PIG[e_unica & dados_sinasc_2$PESO < dados_sinasc_2$PESO_P10] = "PIG"
+dados_sinasc_2$F_PIG[e_unica & dados_sinasc_2$PESO >= dados_sinasc_2$PESO_P10 & dados_sinasc_2$PESO <= dados_sinasc_2$PESO_P90] = "AIG"
+dados_sinasc_2$F_PIG[e_unica & dados_sinasc_2$PESO > dados_sinasc_2$PESO_P90] = "GIG"
+
+# Transformação em fator com ordem dos níveis
+dados_sinasc_2$F_PIG = factor(dados_sinasc_2$F_PIG, levels = c("PIG", "AIG", "GIG"))
+
+# Verificação
+table(GRAVIDEZ = dados_sinasc_2$GRAVIDEZ, F_PIG = dados_sinasc_2$F_PIG, useNA = "always")
+summary(dados_sinasc_2[, c("PESO_P10", "PESO_P90", "F_PIG")])
 
 # Ao terminar a Tarefa 8 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 8" e envie para o repositório Projeto_BDEM_2016
 
