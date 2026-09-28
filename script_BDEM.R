@@ -603,7 +603,141 @@ summary(dados_sinasc_2[, c("PESO_P10", "PESO_P90", "F_PIG")])
 # Tarefa 9. Criar um banco de dados, de nome SINASC_UF.csv (Exemplo: SINASC_RJ.csv), contendo as variáveis listadas no arquivo “Variáveis - Projeto - Tarefa 9 - SINASC.pdf”
 # Atenção: a ordem das variáveis do arquivo deve ser respeitada
 
+# Registos completos para as colunas originais e selecionadas
+dados_sinasc_mt_bruto = subset(dados_sinasc, substr(as.character(CODMUNRES), 1, 2) == "51")
+tnrc_val = sum(complete.cases(dados_sinasc_mt_bruto))
+tnrcr_val = sum(complete.cases(dados_sinasc_2[, 1:21]))
 
+# Construção da estrutura agregada de 103 variáveis
+sinasc_mt = data.frame(
+  ANO = 2016,
+  NIVEL = "UF",
+  CODMUNRES = 51,
+  TN = nrow(dados_sinasc_2),
+  TNRC = tnrc_val,
+  TNRCR = tnrcr_val,
+  
+  # Idade Materna
+  TGI_15 = sum(dados_sinasc_2$IDADEMAE < 15, na.rm = TRUE),
+  TGI_15_19 = sum(dados_sinasc_2$IDADEMAE >= 15 & dados_sinasc_2$IDADEMAE <= 19, na.rm = TRUE),
+  TGI_20_24 = sum(dados_sinasc_2$IDADEMAE >= 20 & dados_sinasc_2$IDADEMAE <= 24, na.rm = TRUE),
+  TGI_25_29 = sum(dados_sinasc_2$IDADEMAE >= 25 & dados_sinasc_2$IDADEMAE <= 29, na.rm = TRUE),
+  TGI_30_34 = sum(dados_sinasc_2$IDADEMAE >= 30 & dados_sinasc_2$IDADEMAE <= 34, na.rm = TRUE),
+  TGI_35_39 = sum(dados_sinasc_2$IDADEMAE >= 35 & dados_sinasc_2$IDADEMAE <= 39, na.rm = TRUE),
+  TGI_40_44 = sum(dados_sinasc_2$IDADEMAE >= 40 & dados_sinasc_2$IDADEMAE <= 44, na.rm = TRUE),
+  TGI_45_49 = sum(dados_sinasc_2$IDADEMAE >= 45 & dados_sinasc_2$IDADEMAE <= 49, na.rm = TRUE),
+  TGI_50 = sum(dados_sinasc_2$IDADEMAE >= 50, na.rm = TRUE),
+  TGIF = sum(dados_sinasc_2$IDADEMAE >= 15 & dados_sinasc_2$IDADEMAE <= 49, na.rm = TRUE),
+  IM_P25 = as.numeric(quantile(dados_sinasc_2$IDADEMAE, 0.25, na.rm = TRUE)),
+  IM_P50 = as.numeric(quantile(dados_sinasc_2$IDADEMAE, 0.50, na.rm = TRUE)),
+  IM_P75 = as.numeric(quantile(dados_sinasc_2$IDADEMAE, 0.75, na.rm = TRUE)),
+  IM_MD = mean(dados_sinasc_2$IDADEMAE, na.rm = TRUE),
+  IM_DP = sd(dados_sinasc_2$IDADEMAE, na.rm = TRUE),
+  
+  # Escolaridade Materna
+  EM_S = sum(dados_sinasc_2$ESCMAE2010 == "Sem escolaridade", na.rm = TRUE),
+  EM_FI = sum(dados_sinasc_2$ESCMAE2010 == "Fundamental I (1ª a 4ª série)", na.rm = TRUE),
+  EM_FII = sum(dados_sinasc_2$ESCMAE2010 == "Fundamental II (5ª a 8ª série)", na.rm = TRUE),
+  EM_M = sum(dados_sinasc_2$ESCMAE2010 == "Médio (antigo 2º grau)", na.rm = TRUE),
+  EM_SI = sum(dados_sinasc_2$ESCMAE2010 == "Superior incompleto", na.rm = TRUE),
+  EM_SC = sum(dados_sinasc_2$ESCMAE2010 == "Superior completo", na.rm = TRUE),
+  
+  # Raça/Cor Materna
+  TGRC_B = sum(dados_sinasc_2$RACACORMAE == "Branca", na.rm = TRUE),
+  TGRC_PT = sum(dados_sinasc_2$RACACORMAE == "Preta", na.rm = TRUE),
+  TGRC_A = sum(dados_sinasc_2$RACACORMAE == "Amarela", na.rm = TRUE),
+  TGRC_PD = sum(dados_sinasc_2$RACACORMAE == "Parda", na.rm = TRUE),
+  TGRC_I = sum(dados_sinasc_2$RACACORMAE == "Indígena", na.rm = TRUE),
+  
+  # Estado Civil e Paridade
+  TGSC = sum(dados_sinasc_2$ESTCIV == "Sem companheiro", na.rm = TRUE),
+  TGCC = sum(dados_sinasc_2$ESTCIV == "Com companheiro", na.rm = TRUE),
+  TGPRI = sum(dados_sinasc_2$PARIDADE == "Nulípara", na.rm = TRUE),
+  TGNPRI = sum(dados_sinasc_2$PARIDADE == "Multípara", na.rm = TRUE),
+  
+  # Gestação
+  TGU = sum(dados_sinasc_2$GRAVIDEZ == "Única", na.rm = TRUE),
+  TGG = sum(dados_sinasc_2$GRAVIDEZ %in% c("Dupla", "Tripla ou mais"), na.rm = TRUE),
+  TGD_22 = sum(dados_sinasc_2$GESTACAO == "Menos de 22 semanas", na.rm = TRUE),
+  TGD_22_27 = sum(dados_sinasc_2$GESTACAO == "22 a 27 semanas", na.rm = TRUE),
+  TGD_28_31 = sum(dados_sinasc_2$GESTACAO == "28 a 31 semanas", na.rm = TRUE),
+  TGD_32_36 = sum(dados_sinasc_2$GESTACAO == "32 a 36 semanas", na.rm = TRUE),
+  TGD_37_41 = sum(dados_sinasc_2$GESTACAO == "37 a 41 semanas", na.rm = TRUE),
+  TGD_42 = sum(dados_sinasc_2$GESTACAO == "42 semanas e mais", na.rm = TRUE),
+  TGD_PRT = sum(dados_sinasc_2$SEMAGESTAC < 37, na.rm = TRUE),
+  TGD_AT = sum(dados_sinasc_2$SEMAGESTAC >= 37 & dados_sinasc_2$SEMAGESTAC <= 41, na.rm = TRUE),
+  TGD_PST = sum(dados_sinasc_2$SEMAGESTAC >= 42, na.rm = TRUE),
+  DG_P25 = as.numeric(quantile(dados_sinasc_2$SEMAGESTAC, 0.25, na.rm = TRUE)),
+  DG_P50 = as.numeric(quantile(dados_sinasc_2$SEMAGESTAC, 0.50, na.rm = TRUE)),
+  DG_P75 = as.numeric(quantile(dados_sinasc_2$SEMAGESTAC, 0.75, na.rm = TRUE)),
+  DG_MD = mean(dados_sinasc_2$SEMAGESTAC, na.rm = TRUE),
+  DG_DP = sd(dados_sinasc_2$SEMAGESTAC, na.rm = TRUE),
+  
+  # Pré-natal (Kotelchuck)
+  TKC_NR = sum(dados_sinasc_2$KOTELCHUCK == "Não fez pré-natal", na.rm = TRUE),
+  TKC_ID = sum(dados_sinasc_2$KOTELCHUCK == "Inadequado", na.rm = TRUE),
+  TKC_IT = sum(dados_sinasc_2$KOTELCHUCK == "Intermediário", na.rm = TRUE),
+  TKC_AD = sum(dados_sinasc_2$KOTELCHUCK == "Adequado", na.rm = TRUE),
+  TKC_MAD = sum(dados_sinasc_2$KOTELCHUCK == "Mais que adequado", na.rm = TRUE),
+  
+  # Parto e Peregrinação
+  TGPRG_S = sum(dados_sinasc_2$PEREG == "Sim", na.rm = TRUE),
+  TGPRG_N = sum(dados_sinasc_2$PEREG == "Não", na.rm = TRUE),
+  TPV = sum(dados_sinasc_2$PARTO == "Vaginal", na.rm = TRUE),
+  TPC = sum(dados_sinasc_2$PARTO == "Cesário", na.rm = TRUE),
+  TRAP_C = sum(dados_sinasc_2$TPAPRESENT == "Cefálico", na.rm = TRUE),
+  TRAP_P = sum(dados_sinasc_2$TPAPRESENT == "Pélvica ou podálica", na.rm = TRUE),
+  TRAP_T = sum(dados_sinasc_2$TPAPRESENT == "Transversa", na.rm = TRUE),
+  
+  # Grupo de Robson
+  TGROB_1 = sum(dados_sinasc_2$TPROBSON == 1, na.rm = TRUE),
+  TGROB_2 = sum(dados_sinasc_2$TPROBSON == 2, na.rm = TRUE),
+  TGROB_3 = sum(dados_sinasc_2$TPROBSON == 3, na.rm = TRUE),
+  TGROB_4 = sum(dados_sinasc_2$TPROBSON == 4, na.rm = TRUE),
+  TGROB_5 = sum(dados_sinasc_2$TPROBSON == 5, na.rm = TRUE),
+  TGROB_6 = sum(dados_sinasc_2$TPROBSON == 6, na.rm = TRUE),
+  TGROB_7 = sum(dados_sinasc_2$TPROBSON == 7, na.rm = TRUE),
+  TGROB_8 = sum(dados_sinasc_2$TPROBSON == 8, na.rm = TRUE),
+  TGROB_9 = sum(dados_sinasc_2$TPROBSON == 9, na.rm = TRUE),
+  TGROB_10 = sum(dados_sinasc_2$TPROBSON == 10, na.rm = TRUE),
+  
+  # Local de Nascimento
+  TNLOC_H = sum(dados_sinasc_2$LOCNASC == "Hospital", na.rm = TRUE),
+  TNLOC_ES = sum(dados_sinasc_2$LOCNASC == "Outros estabelecimentos de saúde", na.rm = TRUE),
+  TNLOC_D = sum(dados_sinasc_2$LOCNASC == "Domicílio", na.rm = TRUE),
+  TNLOC_O = sum(dados_sinasc_2$LOCNASC == "Outros", na.rm = TRUE),
+  TNLOC_AI = sum(dados_sinasc_2$LOCNASC == "Aldeia indígena", na.rm = TRUE),
+  
+  # Recém-nascidos
+  TRS_M = sum(dados_sinasc_2$SEXO == "Masculino", na.rm = TRUE),
+  TRS_F = sum(dados_sinasc_2$SEXO == "Feminino", na.rm = TRUE),
+  TRRC_B = sum(dados_sinasc_2$RACACOR == "Branca", na.rm = TRUE),
+  TRRC_PT = sum(dados_sinasc_2$RACACOR == "Preta", na.rm = TRUE),
+  TRRC_A = sum(dados_sinasc_2$RACACOR == "Amarela", na.rm = TRUE),
+  TRRC_PD = sum(dados_sinasc_2$RACACOR == "Parda", na.rm = TRUE),
+  TRRC_I = sum(dados_sinasc_2$RACACOR == "Indígena", na.rm = TRUE),
+  TRP_BP = sum(dados_sinasc_2$F_PESO == "Baixo peso", na.rm = TRUE),
+  TRP_N = sum(dados_sinasc_2$F_PESO == "Peso normal", na.rm = TRUE),
+  TRP_M = sum(dados_sinasc_2$F_PESO == "Macrossomia", na.rm = TRUE),
+  PESO_P25 = as.numeric(quantile(dados_sinasc_2$PESO, 0.25, na.rm = TRUE)),
+  PESO_P50 = as.numeric(quantile(dados_sinasc_2$PESO, 0.50, na.rm = TRUE)),
+  PESO_P75 = as.numeric(quantile(dados_sinasc_2$PESO, 0.75, na.rm = TRUE)),
+  PESO_MD = mean(dados_sinasc_2$PESO, na.rm = TRUE),
+  PESO_DP = sd(dados_sinasc_2$PESO, na.rm = TRUE),
+  TRPIG_P = sum(dados_sinasc_2$F_PIG == "PIG", na.rm = TRUE),
+  TRPIG_A = sum(dados_sinasc_2$F_PIG == "AIG", na.rm = TRUE),
+  TRPIG_G = sum(dados_sinasc_2$F_PIG == "GIG", na.rm = TRUE),
+  TRAPG5_B = sum(dados_sinasc_2$F_APGAR5 == "Baixo", na.rm = TRUE),
+  TRAPG5_N = sum(dados_sinasc_2$F_APGAR5 == "Normal", na.rm = TRUE),
+  APG5_MD = mean(dados_sinasc_2$APGAR5, na.rm = TRUE),
+  APG5_DP = sd(dados_sinasc_2$APGAR5, na.rm = TRUE),
+  TRAC = sum(dados_sinasc_2$IDANOMAL == "Sim", na.rm = TRUE),
+  TRSAC = sum(dados_sinasc_2$IDANOMAL == "Não", na.rm = TRUE)
+)
+
+# Validação da dimensão (deve ter 1 linha e 103 colunas)
+dim(sinasc_mt)
+View(sinasc_mt)
 # Ao terminar a Tarefa 9 commit com a mensagem "script BDEM - SINASC - tarefas 1 a 9" e envie para o repositório Projeto_BDEM_2016
 
 
