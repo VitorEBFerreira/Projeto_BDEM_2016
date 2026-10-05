@@ -987,6 +987,29 @@ write.csv2(SINASC_MT, "SINASC_MT.csv", row.names = FALSE)
 
 # Verificar se a leitura de todos os bancos foi feita corretamente e a estrutura dos dados
 
+# Leitura da tabela de estimativa 2016 (latin1 e tratamento de '...' como NA)
+dados_sidra_1 = read.csv("população residente estimada - UF e municípios - 2016 - SIDRA - tabela_6579.csv",
+                          sep = ";", fileEncoding = "latin1", na.strings = "...")
+
+# Leitura das tabelas do Censo 2010 em UTF-8 com BOM
+dados_sidra_2 = read.csv("população residente censo 2010 - UF e municípios - total e por sexo - SIDRA - tabela_1552.csv",
+                          sep = ";", fileEncoding = "UTF-8-BOM")
+
+dados_sidra_3 = read.csv("população residente censo 2010 - por faixa etária - UF - SIDRA - tabela_1552.csv",
+                          sep = ";", fileEncoding = "UTF-8-BOM")
+
+dados_sidra_4 = read.csv("população residente censo 2010 - por faixa etária e sexo - municípios - SIDRA - tabela_1552.csv",
+                          sep = ";", fileEncoding = "UTF-8-BOM")
+
+# Remoção de eventual linha vazia no final da tabela 3
+dados_sidra_3 = subset(dados_sidra_3, !is.na(CODMUNRES))
+
+# Verificação das dimensões e estruturas
+dim(dados_sidra_1); str(dados_sidra_1)
+dim(dados_sidra_2); str(dados_sidra_2)
+dim(dados_sidra_3); str(dados_sidra_3)
+dim(dados_sidra_4); str(dados_sidra_4)
+table(dados_sidra_4$F_IDADE)
 
 # Ao terminar a Tarefa 1 commit com a mensagem "script BDEM - SIDRA - tarefa 1" e envie para o repositório Projeto_BDEM_2016
 
