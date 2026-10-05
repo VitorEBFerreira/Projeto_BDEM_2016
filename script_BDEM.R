@@ -1042,11 +1042,64 @@ nrow(sidra_4)  # deve dar 2679 (141 municípios x 19 faixas)
 
 # Ao terminar a Tarefa 3 commit com a mensagem "script BDEM - SIDRA - tarefas 1 a 3" e envie para o repositório Projeto_BDEM_2016
 
-
 # Tarefa 4: Criar um banco de dados, de nome SIDRA_UF.csv (Exemplo: SIDRA_RJ.csv), contendo as variáveis listadas no arquivo “Variáveis - Projeto - Tarefa 4 - SIDRA.pdf”
 
-# Ao terminar a Tarefa 4 commit com a mensagem "script BDEM - SIDRA - tarefas 1 a 4" e envie para o repositório Projeto_BDEM_2016
+# Agrupamento das faixas etárias em: <15 anos, 15 a 49 anos e 50+ anos
+# Unindo as linhas da UF (sidra_3) com as dos municípios (sidra_4)
+df_faixas = rbind(sidra_3[, c("CODMUNRES", "F_IDADE", "POP", "POPF")],
+                   sidra_4[, c("CODMUNRES", "F_IDADE", "POP", "POPF")])
 
+# Classificação dos grupos etários
+faixas_15 = c("0 a 4 anos", "5 a 9 anos", "10 a 14 anos")
+faixas_15_49 = c("15 a 19 anos", "20 a 24 anos", "25 a 29 anos", "30 a 34 anos", 
+                  "35 a 39 anos", "40 a 44 anos", "45 a 49 anos")
+
+df_faixas$GRUPO = ifelse(df_faixas$F_IDADE %in% faixas_15, "15",
+                          ifelse(df_faixas$F_IDADE %in% faixas_15_49, "15_49", "50"))
+
+# Agregação da população total por grupo etário
+totais_pop = as.data.frame.matrix(tapply(df_faixas$POP, list(df_faixas$CODMUNRES, df_faixas$GRUPO), sum))
+colnames(totais_pop) = c("POPRC_15", "POPRC_15_49", "POPRC_50")
+totais_pop$CODMUNRES = as.numeric(rownames(totais_pop))
+
+# Agregação da população feminina por grupo etário
+totais_popf = as.data.frame.matrix(tapply(df_faixas$POPF, list(df_faixas$CODMUNRES, df_faixas$GRUPO), sum))
+colnames(totais_popf) = c("POPRC_F_15", "POPRC_F_15_49", "POPRC_F_50")
+totais_popf$CODMUNRES = as.numeric(rownames(totais_popf))
+
+# Junção dos bancos (base sidra_1 + sidra_2 + faixas etárias) pela chave CODMUNRES (7 dígitos)
+SIDRA_MT = merge(sidra_1[, c("CODMUNRES", "POPRE_T")],
+                  sidra_2[, c("CODMUNRES", "POPRC_T", "POPRC_M", "POPRC_F")], 
+                  by = "CODMUNRES", all.x = TRUE)
+
+SIDRA_MT = merge(SIDRA_MT, totais_pop, by = "CODMUNRES", all.x = TRUE)
+SIDRA_MT = merge(SIDRA_MT, totais_popf, by = "CODMUNRES", all.x = TRUE)
+
+# Adição de metadados
+SIDRA_MT$ANO = 2016
+SIDRA_MT$NIVEL = ifelse(SIDRA_MT$CODMUNRES == 51, "UF", "MUNICIPIO")
+
+# Ajuste de CODMUNRES para 6 dígitos nos municípios e "51" na UF
+SIDRA_MT$CODMUNRES = ifelse(SIDRA_MT$NIVEL == "UF", "51", substr(as.character(SIDRA_MT$CODMUNRES), 1, 6))
+
+# Ordenação: linha da UF no topo e municípios ordenados pelo código
+SIDRA_MT = SIDRA_MT[order(SIDRA_MT$NIVEL != "UF", SIDRA_MT$CODMUNRES), ]
+
+# Seleção final das 13 colunas na ordem exata do arquivo de especificações
+cols_ordem = c("ANO", "NIVEL", "CODMUNRES", "POPRE_T", "POPRC_T", "POPRC_M", "POPRC_F",
+                "POPRC_15", "POPRC_15_49", "POPRC_50", "POPRC_F_15", "POPRC_F_15_49", "POPRC_F_50")
+
+SIDRA_MT = SIDRA_MT[, cols_ordem]
+rownames(SIDRA_MT) = NULL
+
+# Validação das faixas etárias (a soma das faixas deve bater com a população total do Censo)
+all((SIDRA_MT$POPRC_15 + SIDRA_MT$POPRC_15_49 + SIDRA_MT$POPRC_50) == SIDRA_MT$POPRC_T, na.rm = TRUE)
+
+# Verificação do banco final
+dim(SIDRA_MT)
+head(SIDRA_MT)
+
+# Ao terminar a Tarefa 4 commit com a mensagem "script BDEM - SIDRA - tarefas 1 a 4" e envie para o repositório Projeto_BDEM_2016
 
 # Tarefa 5:Exportar o banco de dados com o nome SIDRA_UF.csv (Exemplo: SIDRA_RJ.csv)
 # Ao terminar a Tarefa 5 commit com o comentário "dados SIDRA_UF 2016 e script - SIDRA - tarefas 1 a 5"  e envie para o repositório Projeto_BDEM_2016
