@@ -1241,6 +1241,9 @@ tail(ATLAS_MT)
 
 
 # Tarefa 3. Exportar o banco de dados com o nome ATLAS_UF.csv (Exemplo: ATLAS_RJ.csv)
+
+write.csv(ATLAS_MT, "ATLAS_MT.csv", row.names = FALSE)
+
 # Ao terminar a Tarefa 3 commit com o comentário "dados ATLAS_UF 2016 e script - ATLAS - tarefas 1 a 3"  e envie para o repositório Projeto_BDEM_2016
 
 
