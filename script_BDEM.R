@@ -1286,16 +1286,37 @@ dados_sinisa_1
 
 # Ao terminar a Tarefa 2 commit com a mensagem "script BDEM - SINISA - tarefas 1 a 2" e envie para o repositório Projeto_BDEM_2016
 
-
 # Tarefa 3. Criar um banco de dados, de nome SINISA_UF.csv (Exemplo: SINISA_RJ.csv), contendo as variáveis listadas no arquivo “Variáveis - Projeto - Tarefa 3 - SINISA.pdf”
+
+linha_estado = data.frame(
+  ANO = 2016,
+  NIVEL = "UF",
+  CODMUNRES = "51",
+  POPR_RA = sum(dados_sinisa_1$POPR_RA, na.rm = TRUE),
+  POPR_RE = sum(dados_sinisa_1$POPR_RE, na.rm = TRUE)
+)
+
+# Adequação dos municípios para a tabela final
+municipios_mt = data.frame(
+  ANO = 2016,
+  NIVEL = "MUNICIPIO",
+  CODMUNRES = as.character(dados_sinisa_1$CODMUNRES),
+  POPR_RA = dados_sinisa_1$POPR_RA,
+  POPR_RE = dados_sinisa_1$POPR_RE
+)
+
+# Junção e consolidação da tabela final
+SINISA_MT = rbind(linha_estado, municipios_mt)
+rownames(SINISA_MT) = NULL
+SINISA_MT
 
 # Ao terminar a Tarefa 3 commit com a mensagem "script BDEM - SINISA - tarefas 1 a 3" e envie para o repositório Projeto_BDEM_2016
 
-
 # Tarefa 4. Exportar o banco de dados com o nome SINISA_UF.csv (Exemplo: SINISA_RJ.csv)
+
+
+
 # Ao terminar a Tarefa 4 commit com o comentário "dados SINISA_UF 2016 e script - SINISA - tarefas 1 a 4"  e enviar para o repositório Projeto_BDEM_2016
-
-
 
 ################################
 # ETAPA 6: CRIAÇÃO DE BDEM_UF
