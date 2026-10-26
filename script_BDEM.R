@@ -1332,6 +1332,11 @@ write.csv(SINISA_MT, "SINISA_MT.csv", row.names = FALSE)
 # Lembre-se que SIDRA e ATLAS tem CODMUNRES com 7 dígitos e SINASC, SIM e SINISA com 6 dígitos
 # Além disso dentro do merge all = TRUE garante a manutenção de qualquer município presente em um dos bancos envolvidos no merge
 
+SIDRA_MT = read.csv("SIDRA_MT.csv")
+ATLAS_MT = read.csv("ATLAS_MT.csv")
+SINASC_MT = read.csv2("SINASC_MT.csv")
+SIM_MT = read.csv("SIM_MT.csv")
+SINISA_MT = read.csv("SINISA_MT.csv")
 
 # Ao terminar a Tarefa 1 commit com a mensagem "script BDEM - BDEM - tarefa 1" e envie para o repositório Projeto_BDEM_2016
 
