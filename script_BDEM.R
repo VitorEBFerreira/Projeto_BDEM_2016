@@ -1338,6 +1338,19 @@ SINASC_MT = read.csv2("SINASC_MT.csv")
 SIM_MT = read.csv("SIM_MT.csv")
 SINISA_MT = read.csv("SINISA_MT.csv")
 
+# Padronização de segurança: garantir que todos os CODMUNRES municipais tenham 6 dígitos para o merge
+SIDRA_MT$CODMUNRES = ifelse(SIDRA_MT$NIVEL == "UF", "51", substr(as.character(SIDRA_MT$CODMUNRES), 1, 6))
+ATLAS_MT$CODMUNRES = ifelse(ATLAS_MT$NIVEL == "UF", "51", substr(as.character(ATLAS_MT$CODMUNRES), 1, 6))
+SINASC_MT$CODMUNRES = ifelse(SINASC_MT$NIVEL == "UF", "51", substr(as.character(SINASC_MT$CODMUNRES), 1, 6))
+SIM_MT$CODMUNRES = ifelse(SIM_MT$NIVEL == "UF", "51", substr(as.character(SIM_MT$CODMUNRES), 1, 6))
+SINISA_MT$CODMUNRES = ifelse(SINISA_MT$NIVEL == "UF", "51", substr(as.character(SINISA_MT$CODMUNRES), 1, 6))
+
+# Agregação dos bancos
+BDEM_MT = merge(SIDRA_MT, ATLAS_MT, by = c("ANO", "NIVEL", "CODMUNRES"), all = TRUE)
+BDEM_MT = merge(BDEM_MT, SINASC_MT, by = c("ANO", "NIVEL", "CODMUNRES"), all = TRUE)
+BDEM_MT = merge(BDEM_MT, SIM_MT, by = c("ANO", "NIVEL", "CODMUNRES"), all = TRUE)
+BDEM_MT = merge(BDEM_MT, SINISA_MT, by = c("ANO", "NIVEL", "CODMUNRES"), all = TRUE)
+
 # Ao terminar a Tarefa 1 commit com a mensagem "script BDEM - BDEM - tarefa 1" e envie para o repositório Projeto_BDEM_2016
 
 
