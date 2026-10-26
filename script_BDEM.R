@@ -1353,19 +1353,40 @@ BDEM_MT = merge(BDEM_MT, SINISA_MT, by = c("ANO", "NIVEL", "CODMUNRES"), all = T
 
 # Ao terminar a Tarefa 1 commit com a mensagem "script BDEM - BDEM - tarefa 1" e envie para o repositório Projeto_BDEM_2016
 
-
 # Tarefa 2: Inserir os seguintes indicadores epidemiológicos (com apenas dias casas decimais) no BDEM_UF:
 # TFG: Taxa de fecundidade geral
+BDEM_MT$TFG = round((BDEM_MT$TN / BDEM_MT$POPRC_F_15_49) * 1000, 2)
+
 # TMG: Taxa de mortalidade geral
+BDEM_MT$TMG = round((BDEM_MT$TO / BDEM_MT$POPRE_T) * 1000, 2)
+
 # RMM: Razão de mortalidade materna
+BDEM_MT$RMM = round((BDEM_MT$TO_MT / BDEM_MT$TN) * 100000, 2)
+
 # TMM: Taxa de mortalidade materna
+BDEM_MT$TMM = round((BDEM_MT$TO_MT / BDEM_MT$POPRC_F_15_49) * 100000, 2)
+
 # TMM_P: Taxa de mortalidade materna em até 42 dias
+BDEM_MT$TMM_P = round((BDEM_MT$TO_MT_P / BDEM_MT$POPRC_F_15_49) * 100000, 2)
+
 # TMN: Taxa de mortalidade neonatal
+BDEM_MT$TMN = round((BDEM_MT$TO_NT / BDEM_MT$TN) * 1000, 2)
+
 # TMN_P: Taxa de mortalidade neonatal precoce
+BDEM_MT$TMN_P = round((BDEM_MT$TO_NT_P / BDEM_MT$TN) * 1000, 2)
+
 # TMN_T: Taxa de mortalidade neonatal tardia
+BDEM_MT$TMN_T = round((BDEM_MT$TO_NT_T / BDEM_MT$TN) * 1000, 2)
+
 # TMI: Taxa de mortalidade infantil
+BDEM_MT$TMI = round(((BDEM_MT$TO_NT + BDEM_MT$TO_PNT) / BDEM_MT$TN) * 1000, 2)
 
 # Conferir o banco BDEM_UF após inserção dos indicadores
+
+# Ordenar o banco para que a linha da UF fique no topo, seguida pelos municípios
+BDEM_MT = BDEM_MT[order(BDEM_MT$NIVEL != "UF", BDEM_MT$CODMUNRES), ]
+rownames(BDEM_MT) = NULL
+BDEM_MT
 
 # Ao terminar a Tarefa 2 commit com a mensagem "script BDEM - BDEM - tarefas 1 a 2" e envie para o repositório Projeto_BDEM_2016
 
